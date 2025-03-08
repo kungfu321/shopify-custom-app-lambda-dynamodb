@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - npm install -g aws-cdk yarn sst@3.9.31
+      - yarn
+  build:
+    commands:
+      - sst deploy --stage production

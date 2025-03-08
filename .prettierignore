@@ -1,0 +1,6 @@
+package.json
+.shadowenv.d
+.vscode
+node_modules
+public
+.shopify

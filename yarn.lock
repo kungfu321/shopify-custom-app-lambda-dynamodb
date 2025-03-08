@@ -2515,6 +2515,11 @@
     "@aws-sdk/client-dynamodb" "^3.731.1"
     "@aws-sdk/util-dynamodb" "^3.731.1"
 
+"@shopify/shopify-app-session-storage-memory@^4.0.13":
+  version "4.0.13"
+  resolved "https://registry.yarnpkg.com/@shopify/shopify-app-session-storage-memory/-/shopify-app-session-storage-memory-4.0.13.tgz#4048163d4bd1e475f4b9385f60a76549f6252f51"
+  integrity sha512-8Xk6VuTjWt9PPOrte5p6baQr5RKDwVVmgP6QM6SNs8k3ihx8jeq2flza+i3GC4KsB117wIvh/FwE4Ig8UKShEQ==
+
 "@shopify/shopify-app-session-storage@^3.0.13":
   version "3.0.13"
   resolved "https://registry.yarnpkg.com/@shopify/shopify-app-session-storage/-/shopify-app-session-storage-3.0.13.tgz#eaeb4fdf8787a4c2f8c5e9b0a5d609013bac1f4f"

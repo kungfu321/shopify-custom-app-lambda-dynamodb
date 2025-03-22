@@ -24,7 +24,7 @@ export default $config({
       globalIndexes: {
         shopIndex: {
           hashKey: "shop",
-          projection: "keys-only"
+          projection: "all"
         },
       },
       // deletionProtection: true

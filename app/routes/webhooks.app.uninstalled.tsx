@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import shopifyPromise from "../shopify.server";
-import { deleteItem } from "../utils/dynamodb.server";
+import { queryItems, batchWriteItems } from "../utils/dynamodb.server";
 import { Resource } from "sst";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -12,12 +12,32 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // Webhook requests can trigger multiple times and after an app has already been uninstalled.
   // If this webhook already ran, the session may have been deleted previously.
   if (session) {
-    await deleteItem(
-      Resource.SessionTable.name,
-      {
-        id: session.id,
+    // Delete all sessions for this shop
+    const queryResult = await queryItems({
+      tableName: Resource.SessionTable.name,
+      keyConditionExpression: "shop = :shop",
+      expressionAttributeValues: {
+        ":shop": shop,
       },
-    );
+      indexName: "shopIndex",
+    });
+
+    if (queryResult.items.length > 0) {
+      // Prepare delete requests
+      const deleteRequests = queryResult.items.map(item => ({
+        DeleteRequest: {
+          Key: { id: item.id }
+        }
+      }));
+
+      // Process in batches of 25 (DynamoDB limit)
+      for (let i = 0; i < deleteRequests.length; i += 25) {
+        const batch = deleteRequests.slice(i, i + 25);
+        await batchWriteItems({
+          [Resource.SessionTable.name]: batch
+        });
+      }
+    }
   }
 
   return new Response();

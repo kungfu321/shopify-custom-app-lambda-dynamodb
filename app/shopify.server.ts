@@ -8,12 +8,12 @@ import { DynamoDBSessionStorage } from '@shopify/shopify-app-session-storage-dyn
 import { MemorySessionStorage } from '@shopify/shopify-app-session-storage-memory';
 import { Resource } from "sst";
 
-import { getSecretValue } from "./utils/secrets.server";
+import { getSecretValue } from "./libs/secrets";
 
 const shopifyPromise = async () => {
   const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET } = await getSecretValue("SHOPIFY_KEY");
 
-  const sessionStorage = process.env.NODE_ENV === "production" ? new DynamoDBSessionStorage({ sessionTableName: Resource.SessionTable.name, shopIndexName: 'shopIndex' }) : new MemorySessionStorage();
+  const sessionStorage = Resource.App.stage === "production" ? new DynamoDBSessionStorage({ sessionTableName: Resource.SessionTable.name, shopIndexName: 'shopIndex' }) : new MemorySessionStorage();
 
   return shopifyApp({
     apiKey: SHOPIFY_API_KEY,

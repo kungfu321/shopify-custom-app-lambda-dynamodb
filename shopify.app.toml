@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "66739d2a8736f1300918f17da4844b53"
-application_url = "https://d23vj80oas4fdj.cloudfront.net/"
+application_url = "https://d2kzqj95omn78g.cloudfront.net/"
 embedded = true
 name = "custom-app-lambda-dynamodb"
 handle = "custom-app-lambda-dynamodb"
@@ -25,7 +25,7 @@ api_version = "2025-01"
 scopes = "write_products"
 
 [auth]
-redirect_urls = [ "https://d23vj80oas4fdj.cloudfront.net/api/auth" ]
+redirect_urls = [ "https://d2kzqj95omn78g.cloudfront.net/api/auth" ]
 
 [pos]
 embedded = false

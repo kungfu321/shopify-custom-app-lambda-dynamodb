@@ -13,10 +13,24 @@ import type {
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-// Initialize the DynamoDB client
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION || "ap-southeast-1",
-});
+// Initialize the DynamoDB client using singleton pattern
+let clientInstance: DynamoDBClient | null = null;
+
+function getClient(): DynamoDBClient {
+  if (!clientInstance) {
+    clientInstance = new DynamoDBClient({
+      region: process.env.AWS_REGION || "ap-southeast-1",
+      maxAttempts: 3,
+    });
+
+    console.log("DynamoDB client initialized");
+  }
+
+  return clientInstance;
+}
+
+// Export client for direct access if needed
+export const client = getClient();
 
 /**
  * Type for DynamoDB item attributes
@@ -67,7 +81,7 @@ export async function getItem(tableName: string, key: DynamoDBKey): Promise<Dyna
       Key: marshall(key),
     });
 
-    const response = await client.send(command);
+    const response = await getClient().send(command);
 
     if (!response.Item) {
       return null;
@@ -93,7 +107,7 @@ export async function putItem(tableName: string, item: DynamoDBItem) {
       Item: marshall(item),
     });
 
-    return await client.send(command);
+    return await getClient().send(command);
   } catch (error) {
     console.error(`Error putting item into ${tableName}:`, error);
     throw error;
@@ -118,7 +132,7 @@ export async function updateItem(params: UpdateParams) {
       ConditionExpression: conditionExpression,
     });
 
-    const response = await client.send(command);
+    const response = await getClient().send(command);
 
     if (response.Attributes) {
       return unmarshall(response.Attributes);
@@ -145,7 +159,7 @@ export async function deleteItem(tableName: string, key: DynamoDBKey, returnValu
       Key: marshall(key),
     });
 
-    const response = await client.send(command);
+    const response = await getClient().send(command);
 
     if (returnValues === 'ALL_OLD' && response.Attributes) {
       return unmarshall(response.Attributes);
@@ -187,7 +201,7 @@ export async function queryItems(params: QueryParams) {
       ScanIndexForward: scanIndexForward,
     });
 
-    const response = await client.send(command);
+    const response = await getClient().send(command);
 
     const items = response.Items ? response.Items.map(item => unmarshall(item)) : [];
 
@@ -226,7 +240,7 @@ export async function scanItems(
       Limit: limit,
     });
 
-    const response = await client.send(command);
+    const response = await getClient().send(command);
 
     const items = response.Items ? response.Items.map(item => unmarshall(item)) : [];
 
@@ -273,7 +287,7 @@ export async function batchWriteItems(requests: Record<string, Array<{ PutReques
       RequestItems: marshalledRequests,
     });
 
-    return await client.send(command);
+    return await getClient().send(command);
   } catch (error) {
     console.error(`Error batch writing items:`, error);
     throw error;
